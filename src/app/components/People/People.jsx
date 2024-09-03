@@ -1,21 +1,12 @@
+"use client";
 import "./People.css";
-import { Button, Card, Form, InputNumber } from "antd";
+import { Button, Card, Form, InputNumber, Spin } from "antd";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import axios from "axios";
+import { useMemo, useState } from "react";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
-
-const data = {
-  labels: ["Male", "Female", "Girl", "Boy"],
-  datasets: [
-    {
-      data: [255, 300, 100, 110],
-      backgroundColor: ["#4472c4", "#ed7d31", "#a5a5a5", "#ffc000"],
-      borderColor: "#fff",
-      borderWidth: 0.3,
-    },
-  ],
-};
 
 const options = {
   responsive: true,
@@ -40,17 +31,49 @@ const options = {
   cutout: "80%",
 };
 
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
+const PeopleTab = ({
+  isEditable = false,
+  setActiveMenu,
+  peopleData,
+  setPeopleData,
+}) => {
+  const { male, female, boy, girl } = peopleData;
+  const [loader, setLoader] = useState(false);
+  const onFinish = async (values) => {
+    setLoader(true);
+    await axios.patch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/people/modify`,
+      values,
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("userDetails"))?.token
+          }`,
+        },
+      }
+    );
+    setActiveMenu("2");
+    setPeopleData([]);
+    setLoader(false);
+  };
 
-const PeopleTab = ({ isEditable = false }) => {
+  const data = useMemo(
+    () => ({
+      labels: ["Male", "Female", "Girl", "Boy"],
+      datasets: [
+        {
+          data: [male, female, girl, boy],
+          backgroundColor: ["#4472c4", "#ed7d31", "#a5a5a5", "#ffc000"],
+          borderColor: "#fff",
+          borderWidth: 0.3,
+        },
+      ],
+    }),
+    [peopleData]
+  );
+
   return (
-    <Form
-      name="people-settings"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-    >
+    <Form name="people-settings" initialValues={peopleData} onFinish={onFinish}>
       <div className="people-container">
         <div className="icons-container">
           <div className="icon-item">
@@ -60,10 +83,10 @@ const PeopleTab = ({ isEditable = false }) => {
             />
             {isEditable ? (
               <Form.Item name="male">
-                <InputNumber placeholder="male" defaultValue={1} />
+                <InputNumber placeholder="male" />
               </Form.Item>
             ) : (
-              <div className="icon-number">1</div>
+              <div className="icon-number">{male}</div>
             )}
           </div>
           <div className="icon-item">
@@ -73,10 +96,10 @@ const PeopleTab = ({ isEditable = false }) => {
             />
             {isEditable ? (
               <Form.Item name="female">
-                <InputNumber placeholder="female" defaultValue={2} />
+                <InputNumber placeholder="female" />
               </Form.Item>
             ) : (
-              <div className="icon-number">2</div>
+              <div className="icon-number">{female}</div>
             )}
           </div>
           <div className="icon-item">
@@ -86,10 +109,10 @@ const PeopleTab = ({ isEditable = false }) => {
             />
             {isEditable ? (
               <Form.Item name="girl">
-                <InputNumber placeholder="girl" defaultValue={3} />
+                <InputNumber placeholder="girl" />
               </Form.Item>
             ) : (
-              <div className="icon-number">3</div>
+              <div className="icon-number">{girl}</div>
             )}
           </div>
           <div className="icon-item">
@@ -99,17 +122,17 @@ const PeopleTab = ({ isEditable = false }) => {
             />
             {isEditable ? (
               <Form.Item name="boy">
-                <InputNumber placeholder="boy" defaultValue={4} />
+                <InputNumber placeholder="boy" />
               </Form.Item>
             ) : (
-              <div className="icon-number">4</div>
+              <div className="icon-number">{boy}</div>
             )}
           </div>
         </div>
         {isEditable ? (
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
-              Submit
+              {loader ? <Spin className="loader" /> : "Submit"}
             </Button>
           </Form.Item>
         ) : (

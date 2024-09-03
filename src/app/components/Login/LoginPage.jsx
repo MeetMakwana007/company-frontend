@@ -1,10 +1,32 @@
+import axios from "axios";
 import "./Login.css";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 
 const LoginPage = ({ onLogin }) => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    onLogin();
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/login`,
+        {
+          username: values.username,
+          password: values.password,
+        }
+      );
+
+      if (response.data.token) {
+        const { token, username } = response.data;
+        localStorage.setItem(
+          "userDetails",
+          JSON.stringify({ token, username })
+        );
+        message.success("Logged in successfully");
+        onLogin();
+      } else {
+        message.error("Login failed, please try again.");
+      }
+    } catch (error) {
+      message.error("Invalid username or password");
+    }
   };
 
   return (
