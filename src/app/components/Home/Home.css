@@ -1,0 +1,64 @@
+.navbar {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-content {
+  display: flex;
+  width: 100%;
+  /* max-width: 1200px; Adjust based on your layout */
+  /* margin: 0 auto; */
+  justify-content: space-between;
+}
+
+.left-menu {
+  display: flex;
+  width: 35%;
+}
+
+.right-menu {
+  display: flex;
+  width: 15%;
+}
+
+.left-menu .ant-menu-item {
+  margin-left: 20px;
+}
+
+.left-menu .ant-menu-item-active .tabs {
+  color: #fff;
+}
+
+.left-menu .ant-menu-item-selected {
+  background-color: black !important;
+}
+
+.right-menu .ant-menu-item-selected {
+  background-color: black !important;
+}
+
+.tabs {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.main-layout {
+  height: 100vh;
+}
+
+.content-container {
+  height: 100%;
+}
+
+.content {
+  padding: 20px;
+}
+
+.content .loading {
+  display: flex;
+  justify-content: center;
+}
+
+.content .content-main {
+  display: flex;
+  justify-content: center;
+}
